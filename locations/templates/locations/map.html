@@ -3,79 +3,9 @@
 {% block content %}
 <style>
     #map {
-        height: 850px;
+        height: 88vh;
     }
 </style>
-<div class="w3-sidebar w3-bar-block w3-border-right" style="display:none" id="mySidebar">
-    <button onclick="w3_close()" class="w3-bar-item w3-large">Close &times;</button>
-    <a href="#" class="w3-bar-item w3-button">Link 1</a>
-    <a href="#" class="w3-bar-item w3-button">Link 2</a>
-    <a href="#" class="w3-bar-item w3-button">Link 3</a>
-</div>
-<div id="main">
-
-    <!-- <button id="openNav" class="w3-button w3-xlarge" onclick="w3_open()">&#9776;</button> -->
-    <div class="w3-container">
-        <nav class="navbar" role="navigation" aria-label="main navigation">
-            <div class="navbar-brand">
-                <a class="navbar-item" href="https://bulma.io">
-                    <img src="https://bulma.io/images/bulma-logo.png" width="112" height="28" />
-                </a>
-
-                <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false"
-                    data-target="navbarBasicExample">
-                    <span aria-hidden="true"></span>
-                    <span aria-hidden="true"></span>
-                    <span aria-hidden="true"></span>
-                </a>
-            </div>
-
-            <div id="navbarBasicExample" class="navbar-menu">
-                <div class="navbar-start">
-                    <a class="navbar-item"> Home </a>
-
-                    <a class="navbar-item"> Documentation </a>
-
-                    <div class="navbar-item has-dropdown is-hoverable">
-                        <a class="navbar-link"> More </a>
-
-                        <div class="navbar-dropdown">
-                            <a class="navbar-item"> About </a>
-                            <a class="navbar-item"> Jobs </a>
-                            <a class="navbar-item"> Contact </a>
-                            <hr class="navbar-divider" />
-                            <a class="navbar-item"> Report an issue </a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="navbar-end">
-                    <div class="navbar-item">
-                        <div class="buttons">
-                            {% if request.user.is_authenticated %}
-                            <a class="button is-primary" href="{% url 'logout' %}">
-                                <strong>Logout</strong>
-                            </a>
-                            {% else %}
-                            <a class="button is-primary" href="{% url 'register' %}">
-                                <strong>Sign up</strong>
-                            </a>
-                            <a class="button is-light" href="{% url 'login' %}"> Log in </a>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </nav>
-    </div>
-
-
-    <div class="w3-container">
-        <div id="map"></div>
-    </div>
-
-</div>
-
 <script>
     function createIcon(url,) {
         return L.icon({
@@ -85,7 +15,184 @@
             popupAnchor: [1, -34],
         });
     }
-    var map = L.map('map').setView([27.7172, 85.3240], 7);
+    const map = L.map('map').setView([27.7172, 85.3240], 7);
+    const wheelchairs = L.layerGroup().addTo(map);
+    let wheelChairbutton = L.control({ position: "topright" });
+
+    function createButton(label, container) {
+        var btn = L.DomUtil.create('button', '', container);
+        btn.setAttribute('type', 'button');
+        btn.innerHTML = label;
+        return btn;
+    }
+
+    function createNavButton(label, container, e) {
+        var btn = L.DomUtil.create('a', '', container);
+        btn.setAttribute('type', 'button');
+        btn.innerHTML = label;
+        btn.href = `/create-location/?lat=${e.latlng.lat}&lng=${e.latlng.lng}`
+        return btn;
+    }
+
+    const control = L.Routing.control({
+        waypoints: [
+
+        ],
+        routeWhileDragging: true
+    }).addTo(map);
+
+    const routingContainer = document.getElementsByClassName("leaflet-routing-container")[0];
+    routingContainer.style = "display:none;"
+
+    map.on('click', function (e) {
+        var container = L.DomUtil.create('div');
+        var start = createButton('Start from this location', container);
+        var destination = createButton('Go to this location', container);
+        // {% if request.user.is_authenticated %}
+        var createLocation = createNavButton("<button id='nav-button'>Add this point</button>", container, e);
+        // {% endif %}
+        L.popup()
+            .setContent(container)
+            .setLatLng(e.latlng)
+            .openOn(map);
+
+        L.DomEvent.on(start, 'click', function () {
+            control.spliceWaypoints(0, 1, e.latlng);
+            map.closePopup();
+        });
+
+        L.DomEvent.on(destination, 'click', function () {
+            control.spliceWaypoints(control.getWaypoints().length - 1, 1, e.latlng);
+            map.closePopup();
+        });
+
+        L.DomEvent.on(destination, 'click', function () {
+            control.spliceWaypoints(control.getWaypoints().length - 1, 1, e.latlng);
+            routingContainer.style = "display:block;"
+            map.closePopup();
+        });
+    });
+
+
+    const clearButton = L.Control.extend({
+        options: {
+            position: "topright",
+        },
+
+        onAdd: function () {
+            const button = L.DomUtil.create("div");
+            button.innerHTML = "<button id='clear-button'>Clear Waypoints</button>";
+            button.onclick = function () {
+                control.setWaypoints([]);
+                L.popup()
+                    .setContent("");
+                routingContainer.style = "display:none;"
+            };
+            return button;
+        },
+    });
+
+    map.addControl(new clearButton());
+
+
+    wheelChairbutton.onAdd = function (map) {
+        let div = L.DomUtil.create("div", "wheelchair-button");
+        div.innerHTML = "<button id='wheelchair-button'>Toggle Wheelchairs</button>";
+        return div;
+    };
+
+    wheelChairbutton.addTo(map);
+
+    document.getElementById("wheelchair-button").addEventListener("click", function () {
+        if (map.hasLayer(wheelchairs)) {
+            map.removeLayer(wheelchairs);
+        } else {
+            map.addLayer(wheelchairs);
+        }
+    });
+
+    const tactilePaving = L.layerGroup().addTo(map);
+    let pavingButton = L.control({ position: "topright" });
+
+    pavingButton.onAdd = function (map) {
+        let div = L.DomUtil.create("div", "paving-button");
+        div.innerHTML = "<button id='paving-button'>Toggle Tactile Pavings</button>";
+        return div;
+    };
+
+    pavingButton.addTo(map);
+
+    document.getElementById("paving-button").addEventListener("click", function () {
+        if (map.hasLayer(tactilePaving)) {
+            map.removeLayer(tactilePaving);
+        } else {
+            map.addLayer(tactilePaving);
+        }
+    });
+    const parking = L.layerGroup().addTo(map);
+    let parkingButton = L.control({ position: "topright" });
+
+    parkingButton.onAdd = function (map) {
+        let div = L.DomUtil.create("div", "parking-button");
+        div.innerHTML = "<button id='parking-button'>Toggle Parking</button>";
+        return div;
+    };
+
+    parkingButton.addTo(map);
+
+    document.getElementById("parking-button").addEventListener("click", function () {
+        if (map.hasLayer(parking)) {
+            map.removeLayer(parking);
+        } else {
+            map.addLayer(parking);
+        }
+    });
+
+    const handrail = L.layerGroup().addTo(map);
+    let handrailButton = L.control({ position: "topright" });
+
+    handrailButton.onAdd = function (map) {
+        let div = L.DomUtil.create("div", "handrail-button");
+        div.innerHTML = "<button id='handrail-button'>Toggle Handrail</button>";
+        return div;
+    };
+
+    handrailButton.addTo(map);
+
+    document.getElementById("handrail-button").addEventListener("click", function () {
+        if (map.hasLayer(handrail)) {
+            map.removeLayer(handrail);
+        } else {
+            map.addLayer(handrail);
+        }
+    });
+
+    const restrooms = L.layerGroup().addTo(map);
+    let restroomButton = L.control({ position: "topright" });
+
+    restroomButton.onAdd = function (map) {
+        let div = L.DomUtil.create("div", "parking-button");
+        div.innerHTML = "<button id='restroom-button'>Toggle Accessible Restrooms</button>";
+        return div;
+    };
+
+    restroomButton.addTo(map);
+
+    document.getElementById("restroom-button").addEventListener("click", function () {
+        if (map.hasLayer(restrooms)) {
+            map.removeLayer(restrooms);
+        } else {
+            map.addLayer(restrooms);
+        }
+    });
+    function handleButtonClick(event) {
+        event.stopPropagation();
+    }
+    document.getElementById("restroom-button").addEventListener("click", handleButtonClick);
+    document.getElementById("wheelchair-button").addEventListener("click", handleButtonClick);
+    document.getElementById("paving-button").addEventListener("click", handleButtonClick);
+    document.getElementById("parking-button").addEventListener("click", handleButtonClick);
+    document.getElementById("handrail-button").addEventListener("click", handleButtonClick);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -97,19 +204,141 @@
     var icon = createIcon("https://cdn.snishant.com.np/r/handrail.png");
     // {% elif feature.category == "tactile_paving" %}
     var icon = createIcon("https://cdn.snishant.com.np/r/tactile_paving.png");
+    // {% elif feature.category == "accessible_parking" %}
+    var icon = createIcon("https://cdn.snishant.com.np/r/parking.png");
+    // {% elif feature.category == "accessible_restroom" %}
+    var icon = createIcon("https://cdn.snishant.com.np/r/restroom.png");
     // {% endif %}
     var lat = "{{feature.location.latitude}}"
     var lon = "{{feature.location.longitude}}"
+    var name = "{{feature.location.name}}"
     var marker = L.marker([parseFloat(lat), parseFloat(lon)], {
-        icon: icon
-    }).addTo(map);
-    function onMapClick(e) {
-        w3_open();
+        icon: icon,
+        markerInfo: {
+            name: "{{feature.location.name}}" || "Unknown",
+            latitude: lat,
+            longitude: lon,
+            feature: "{{feature.category}}",
+            id: "{{feature.id}}"
+        }
+    });
+    var info = marker.options.markerInfo;
+    if (info.feature === "wheelchair") {
+        wheelchairs.addLayer(marker);
+        map.removeLayer(wheelchairs);
+    }
+    if (info.feature === "accessible_parking") {
+        parking.addLayer(marker);
+        map.removeLayer(parking);
+    }
+    if (info.feature === "tactile_paving") {
+        tactilePaving.addLayer(marker);
+        map.removeLayer(tactilePaving);
     }
 
+    if (info.feature === "handrail") {
+        handrail.addLayer(marker);
+        map.removeLayer(handrail);
+    }
+    if (info.feature === "accessible_restroom") {
+        restrooms.addLayer(marker);
+        map.removeLayer(restrooms);
+    }
+
+    function onMapClick(e) {
+        var markerInfoo = e.target.options.markerInfo;
+        document.getElementById("marker-info").innerHTML = "<h3>" + markerInfoo.name + "</h3><p>Latitude: " + markerInfoo.latitude + "</p><p>Longitude: " + markerInfoo.longitude + "</p><p>Type: " + markerInfoo.feature + "</p>";
+        // {% if request.user.is_authenticated %}
+        // Clear previous form and review count
+        document.getElementById("form-container").innerHTML = "";
+
+        // Create a container div for the form
+        var formContainer = document.createElement("div");
+        formContainer.className = "form-container";
+
+        // Create the h3 heading
+        var heading = document.createElement("h3");
+        heading.innerText = "Add Your Review";
+        formContainer.appendChild(heading);
+
+        // Create and append the form dynamically
+        var form = document.createElement("form");
+        form.method = "post";
+        form.action = "/add-review/" + markerInfoo.id + "/";
+
+        var csrfToken = "{{csrf_token}}";
+        var csrfInput = document.createElement("input");
+        csrfInput.type = "hidden";
+        csrfInput.name = "csrfmiddlewaretoken";
+        csrfInput.value = csrfToken;
+
+        var featureIdInput = document.createElement("input");
+        featureIdInput.type = "hidden";
+        featureIdInput.name = "feature_id";
+        featureIdInput.value = markerInfoo.id;
+
+        var ratingLabel = document.createElement("label");
+        ratingLabel.innerText = "Is this a legitimate place?";
+        ratingLabel.style.fontWeight = "bold";
+
+        var ratingInput = document.createElement("input");
+        ratingInput.type = "checkbox";
+        ratingInput.name = "rating";
+        ratingInput.className = "checkbox-input";
+
+        var submitButton = document.createElement("button");
+        submitButton.type = "submit";
+        submitButton.innerText = "Add Review";
+        submitButton.className = "submit-button";
+
+        form.appendChild(csrfInput);
+        form.appendChild(featureIdInput);
+        form.appendChild(ratingLabel);
+        form.appendChild(document.createElement("br")); // Move to a new line
+        form.appendChild(ratingInput);
+        form.appendChild(document.createElement("br")); // Move to a new line
+        form.appendChild(submitButton);
+
+        formContainer.appendChild(form);
+
+        document.getElementById("form-container").appendChild(formContainer);
+        // {% endif %}
+        var msg = new SpeechSynthesisUtterance();
+        msg.text = markerInfoo.name.toString();
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.speak(msg);
+        } else {
+            alert("Sorry, your browser doesn't support text to speech!");
+        }
+        w3_open();
+
+    }
     marker.on("click", onMapClick);
+
     // {% endfor %}
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
 
+        // Get all "navbar-burger" elements
+        const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+
+        // Add a click event on each of them
+        $navbarBurgers.forEach(el => {
+            el.addEventListener('click', () => {
+
+                // Get the target from the "data-target" attribute
+                const target = el.dataset.target;
+                const $target = document.getElementById(target);
+
+                // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+                el.classList.toggle('is-active');
+                $target.classList.toggle('is-active');
+
+            });
+        });
+
+    });
+</script>
 <!--map-->
 {% endblock %}

@@ -7,20 +7,75 @@
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/css/iziToast.min.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+  <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+
   {% load static %}
+  <link rel="stylesheet" href="{% static 'locations/css/styles.css' %}">
   <script src="{% static 'locations/js/main.js' %}"></script>
   <title>{% block title %}{% endblock %}</title>
 </head>
+<div class="w3-sidebar w3-bar-block w3-border-right" style="display:none" id="mySidebar">
+  <button onclick="w3_close()" class="w3-bar-item w3-large">Close &times;</button>
+  <div id="marker-info" class="w3-bar-item"></div>
+  <div id="form-container" class="form-container"></div>
+  <br>
+</div>
+<div id="main">
+
+  <!-- <button id="openNav" class="w3-button w3-xlarge" onclick="w3_open()">&#9776;</button> -->
+  <div class="w3-container">
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+          <img src="https://cdn.snishant.com.np/r/logo_em.png" width="112" height="28" />
+        </a>
+        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </a>
+      </div>
+
+      <div id="navbarBasicExample" class="navbar-menu">
+        <div class="navbar-start">
+        </div>
+
+        <div class="navbar-end">
+          <div class="navbar-item">
+          </div>
+          <div class="navbar-item">
+            <div class="buttons">
+              {% if request.user.is_authenticated %}
+              <a class="button is-primary" href="{% url 'logout' %}">
+                <strong>Logout</strong>
+              </a>
+              {% else %}
+              <a class="button is-primary" href="{% url 'register' %}">
+                <strong>Sign up</strong>
+              </a>
+              <a class="button is-light" href="{% url 'login' %}">Log in</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+  <div class="w3-container">
+    <div id="map"></div>
+  </div>
+
+</div>
 
 <body>
   <div class="content">{% block content %} {% endblock %}</div>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js"></script>
+  <script src="https://use.fontawesome.com/releases/v5.14.0/js/all.js"></script>
+
 
   {% for message in messages %}
   <script>

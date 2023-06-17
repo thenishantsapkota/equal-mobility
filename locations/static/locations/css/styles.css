@@ -1,0 +1,83 @@
+.form-container {
+    margin-left: 10px;
+}
+
+.checkbox-input {
+    transform: scale(1.5);
+    /* Adjust the scale factor as needed */
+}
+
+.submit-button {
+    margin-top: 10px;
+}
+
+#wheelchair-button,
+#parking-button,
+#paving-button,
+#handrail-button,
+#clear-button,
+#restroom-button {
+    background-color: #00d1b2;
+    /* Green */
+    border: none;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    margin: 4px 2px;
+    cursor: pointer;
+    width: 100px;
+}
+
+@media (max-width: 600px) {
+
+    #wheelchair-button,
+    #parking-button,
+    #paving-button,
+    #handrail-button,
+    #clear-button,
+    #restroom-button {
+        width: 100%;
+        /* Make buttons occupy the full width of the container */
+        margin-bottom: 10px;
+        /* Add some spacing between buttons */
+    }
+}
+
+/* Styles for medium screens */
+@media (min-width: 601px) and (max-width: 900px) {
+
+    #wheelchair-button,
+    #parking-button,
+    #paving-button,
+    #handrail-button,
+    #clear-button,
+    #restroom-buttonn {
+        width: 150px;
+        /* Set a specific width for medium screens */
+    }
+}
+
+/* Styles for large screens */
+@media (min-width: 901px) {
+
+    #wheelchair-button,
+    #parking-button,
+    #paving-button,
+    #handrail-button,
+    #clear-button,
+    #restroom-button {
+        width: 150px;
+        /* Set a specific width for large screens */
+    }
+}
+
+.navbar-end {
+    justify-content: center;
+}
+
+.navbar-item .field {
+    margin-bottom: 0;
+}

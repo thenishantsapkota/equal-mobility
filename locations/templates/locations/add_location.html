@@ -1,0 +1,64 @@
+{% extends 'locations/base.html' %}
+{% block title %}Add a location - Equal Mobility{% endblock %}
+{% block content %}
+<style>
+    .errorlist {
+        color: red;
+        opacity: 50%;
+    }
+</style>
+<section class="hero is-fullheight">
+    <div class="hero-body">
+        <div class="container">
+            <div class="column is-4 is-offset-4">
+                <div class="card">
+                    <div class="card-content">
+                        <h1 class="title has-text-centered">Add New Location</h1>
+                        <form method="POST">
+                            {% csrf_token %}
+                            <div class="field">
+                                <label class="label">Name</label>
+                                <div class="control has-icons-left">
+                                    {{form.name}}{{form.name.errors}}
+                                    <span class="icon is-small is-left">
+                                        <i class="fa-solid fa-input-text"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label class="label">Latitude</label>
+                                <div class="control has-icons-left">
+                                    {{form.latitude}}{{form.latitude.errors}}
+                                    <i class="fa-solid fa-location-dot"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label class="label">Longitude</label>
+                                <div class="control has-icons-left">
+                                    {{form.longitude}}{{form.longitude.errors}}
+                                    <span class="icon is-small is-left">
+                                        <i class="fa-solid fa-location-dot"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label class="label">Category</label>
+                                <div class="control has-icons-left">
+                                    {{form.category}}{{form.category.errors}}
+                                    <span class="icon is-small is-left">
+                                        <i class="fa-solid fa-circle-info"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <button class="button is-success is-fullwidth">Add Location</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
