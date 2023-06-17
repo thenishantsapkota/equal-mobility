@@ -1,0 +1,71 @@
+{% extends 'authentication/base.html' %}
+{% block title %}
+Register - Equal Mobility
+{% endblock %}
+{% block content %}
+<style>
+    .errorlist {
+        color: red;
+        opacity: 50%;
+    }
+</style>
+<section class="hero is-fullheight">
+    <div class="hero-body">
+        <div class="container">
+            <div class="column is-4 is-offset-4">
+                <div class="card">
+                    <div class="card-content">
+                        <h1 class="title has-text-centered">Register</h1>
+                        <form method="POST">
+                            {% csrf_token %}
+                            <div class="field">
+                                <div class="field">
+                                    <label class="label">Username</label>
+                                    <div class="control has-icons-left">
+                                        {{form.username}}{{form.username.errors}}
+                                        <span class="icon is-small is-left">
+                                            <i class="fas fa-user"></i>
+                                        </span>
+                                    </div>
+                                    <label class="label">Email</label>
+                                    <div class="control has-icons-left">
+                                        {{form.email}}{{form.email.errors}}
+                                        <span class="icon is-small is-left">
+                                            <i class="fas fa-envelope"></i>
+                                        </span>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="field">
+                                <label class="label">Password</label>
+                                <div class="control has-icons-left">
+                                    {{form.password1}}{{form.password1.errors}}
+                                    <span class="icon is-small is-left">
+                                        <i class="fas fa-lock"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label class="label">Confirm Password</label>
+                                <div class="control has-icons-left">
+                                    {{form.password2}}{{form.password2.errors}}
+                                    <span class="icon is-small is-left">
+                                        <i class="fas fa-lock"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <button class="button is-success is-fullwidth">Register</button>
+                            </div>
+                            <div class="has-text-centered">
+                                <p>Already registered? <a href="{% url 'login' %}">Login</a></p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

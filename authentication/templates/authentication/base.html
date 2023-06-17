@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/css/iziToast.min.css">
+    {% load static %}
+    <title>{% block title %}{% endblock %}</title>
+</head>
+
+<body>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+        body {
+            font: 'Poppins', sans-serif;
+        }
+    </style>
+    {% block content %}
+    {% endblock %}
+    <script src="https://use.fontawesome.com/releases/v5.14.0/js/all.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js"></script>
+
+    {% for message in messages %}
+    <script>
+        // {% if message.tags == "success" %}
+        iziToast.success({
+            title: "Success",
+            message: "{{message}}"
+        });
+        // {% elif message.tags == "error" %}
+        iziToast.error({
+            title: "Error",
+            message: "{{message}}"
+        });
+        // {% endif %}
+    </script>
+    {% endfor %}
+</body>
+
+</html>

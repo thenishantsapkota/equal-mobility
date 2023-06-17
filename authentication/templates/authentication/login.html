@@ -1,0 +1,54 @@
+{% extends 'authentication/base.html' %}
+{% block title %}
+Login - Equal Mobility
+{% endblock %}
+{% block content %}
+<style>
+    .errorlist {
+        color: red;
+        opacity: 50%;
+    }
+</style>
+<section class="hero is-fullheight">
+    <div class="hero-body">
+        <div class="container">
+            <div class="column is-4 is-offset-4">
+                <div class="card">
+                    <div class="card-content">
+                        <h1 class="title has-text-centered">Login</h1>
+                        <form method="POST">
+                            {% csrf_token %}
+                            <div class="field">
+                                <label class="label">Username</label>
+                                <div class="control has-icons-left">
+                                    {{form.username}}{{form.username.errors}}
+                                    <span class="icon is-small is-left">
+                                        <i class="fas fa-user"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label class="label">Password</label>
+                                <div class="control has-icons-left">
+                                    {{form.password}}{{form.password.errors}}
+                                    <span class="icon is-small is-left">
+                                        <i class="fas fa-lock"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <button class="button is-success is-fullwidth">Login</button>
+                            </div>
+
+
+                            <div class="has-text-centered">
+                                <p>Not Registered? <a href="{% url 'register' %}">Register</a></p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
