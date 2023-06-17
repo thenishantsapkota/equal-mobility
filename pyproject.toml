@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "backend"
+version = "1.0"
+description = "A backend for OSM Hackfest Project"
+authors = ["Nishant Sapkota <snishant306@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+django = "^4.2.2"
+overpy = "^0.6"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.3.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
