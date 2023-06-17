@@ -33,7 +33,7 @@ class Command(BaseCommand):
             else:
                 continue
 
-            name = element.tags.get("name", "")
+            name = element.tags.get("name", "")  # type: ignore
             accessibility_feature = "tactile_paving"
 
             location, created = Location.objects.get_or_create(
