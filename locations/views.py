@@ -40,6 +40,10 @@ class AccessibilityFeatureView(View):
             messages.error(request, "You have already reviewed this location")
             return redirect("/")
         review = form.save(commit=False)
+        location = Location.objects.get(accessibilityfeature=feature)
+        if name := form.cleaned_data.get("name"):
+            location.name = name
+            location.save()
         if review.correct_info:
             review.positive_reviews += 1
         else:

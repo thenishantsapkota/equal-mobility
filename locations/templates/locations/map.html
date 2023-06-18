@@ -1,11 +1,13 @@
 {% extends 'locations/base.html' %}
 {% block title %}Map{% endblock %}
 {% block content %}
+
 <style>
     #map {
         height: 88vh;
     }
 </style>
+{{form.name}}
 <script>
     function createIcon(url,) {
         return L.icon({
@@ -103,11 +105,14 @@
 
     wheelChairbutton.addTo(map);
 
-    document.getElementById("wheelchair-button").addEventListener("click", function () {
+    var wheelButton = document.getElementById("wheelchair-button");
+    wheelButton.addEventListener("click", function () {
         if (map.hasLayer(wheelchairs)) {
             map.removeLayer(wheelchairs);
+            wheelButton.style.background = "#00d1b2"
         } else {
             map.addLayer(wheelchairs);
+            wheelButton.style.background = "red"
         }
     });
 
@@ -122,11 +127,14 @@
 
     pavingButton.addTo(map);
 
-    document.getElementById("paving-button").addEventListener("click", function () {
+    var pavementButton = document.getElementById("paving-button")
+    pavementButton.addEventListener("click", function () {
         if (map.hasLayer(tactilePaving)) {
             map.removeLayer(tactilePaving);
+            pavementButton.style.background = "#00d1b2"
         } else {
             map.addLayer(tactilePaving);
+            pavementButton.style.background = "red"
         }
     });
     const parking = L.layerGroup().addTo(map);
@@ -140,11 +148,14 @@
 
     parkingButton.addTo(map);
 
-    document.getElementById("parking-button").addEventListener("click", function () {
+    var parkButton = document.getElementById("parking-button")
+    parkButton.addEventListener("click", function () {
         if (map.hasLayer(parking)) {
             map.removeLayer(parking);
+            parkButton.style.background = "#00d1b2"
         } else {
             map.addLayer(parking);
+            parkButton.style.background = "red"
         }
     });
 
@@ -159,14 +170,16 @@
 
     handrailButton.addTo(map);
 
-    document.getElementById("handrail-button").addEventListener("click", function () {
+    var handrailButtonn = document.getElementById("handrail-button")
+    handrailButtonn.addEventListener("click", function () {
         if (map.hasLayer(handrail)) {
             map.removeLayer(handrail);
+            handrailButtonn.style.background = "#00d1b2"
         } else {
             map.addLayer(handrail);
+            handrailButtonn.style.background = "red"
         }
     });
-
     const restrooms = L.layerGroup().addTo(map);
     let restroomButton = L.control({ position: "topright" });
 
@@ -178,11 +191,14 @@
 
     restroomButton.addTo(map);
 
-    document.getElementById("restroom-button").addEventListener("click", function () {
+    var restButton = document.getElementById("restroom-button");
+    restButton.addEventListener("click", function () {
         if (map.hasLayer(restrooms)) {
             map.removeLayer(restrooms);
+            restButton.style.background = "#00d1b2";
         } else {
             map.addLayer(restrooms);
+            restButton.style.background = "red";
         }
     });
     function handleButtonClick(event) {
@@ -247,9 +263,9 @@
 
     function onMapClick(e) {
         var markerInfoo = e.target.options.markerInfo;
-        document.getElementById("marker-info").innerHTML = "<h3>" + markerInfoo.name + "</h3><p>Latitude: " + markerInfoo.latitude + "</p><p>Longitude: " + markerInfoo.longitude + "</p><p>Type: " + markerInfoo.feature + "</p>";
+        // document.getElementById("marker-info").innerHTML = "<h3>" + markerInfoo.name + "</h3><p>Latitude: " + markerInfoo.latitude + "</p><p>Longitude: " + markerInfoo.longitude + "</p><p>Type: " + markerInfoo.feature + "</p>";
+        document.getElementById("marker-info").innerHTML = `<h2>${markerInfoo.name}</h2><p>Latitude: ${markerInfoo.latitude}</p><p>Longitude: ${markerInfoo.longitude}</p><p>Type: ${markerInfoo.feature}</p>`
         // {% if request.user.is_authenticated %}
-        // Clear previous form and review count
         document.getElementById("form-container").innerHTML = "";
 
         // Create a container div for the form
@@ -283,8 +299,18 @@
 
         var ratingInput = document.createElement("input");
         ratingInput.type = "checkbox";
-        ratingInput.name = "rating";
+        ratingInput.name = "correct_info";
+        ratingInput.id = "id_correct_info";
         ratingInput.className = "checkbox-input";
+
+        var nameLabel = document.createElement("label");
+        nameLabel.innerText = "Name:";
+        nameLabel.style.fontWeight = "bold";
+
+        var nameInput = document.createElement("input");
+        nameInput.type = "text";
+        nameInput.name = "name";
+        nameInput.id = "id_name";
 
         var submitButton = document.createElement("button");
         submitButton.type = "submit";
@@ -296,7 +322,12 @@
         form.appendChild(ratingLabel);
         form.appendChild(document.createElement("br")); // Move to a new line
         form.appendChild(ratingInput);
+        form.appendChild(document.createElement("br"));
+        // {% if markerInfoo.name == "Unknown" %}
+        form.appendChild(nameLabel)
         form.appendChild(document.createElement("br")); // Move to a new line
+        form.appendChild(nameInput)
+        // {% endif %}
         form.appendChild(submitButton);
 
         formContainer.appendChild(form);

@@ -11,6 +11,8 @@ ACCESSIBLITY_CHOICES = (
 
 
 class UserReviewForm(forms.ModelForm):
+    name = forms.CharField(max_length=100, required=False)
+
     class Meta:
         model = UserReview
         fields = ("correct_info",)
